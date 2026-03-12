@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { Route } from "./+types/donate";
 import { ArrowLeft, Wallet, QrCode, CreditCard, ExternalLink, ChevronRight, Check } from "lucide-react";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -288,12 +287,36 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
   }
 
   if (gateway === "paypal") {
-    // Requires VITE_PAYPAL_CLIENT_ID to be set in frontend .env
-    const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || "test";
     const apiBaseUrl = import.meta.env.VITE_BACKEND_URL || "";
 
+    const handlePayPalDonate = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!username || !amount) return;
+
+      setLoading(true);
+      try {
+        const res = await fetch(`${apiBaseUrl}/api/paypal/donate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, amount: parseInt(amount, 10) }),
+        });
+        
+        const data = await res.json();
+        if (data.url) {
+           // Redirect User to the PayPal Checkout URL
+           window.location.href = data.url;
+        } else {
+           alert("Failed to initiate PayPal checkout. " + (data.error || ""));
+           setLoading(false);
+        }
+      } catch (err) {
+        console.error("PayPal Error:", err);
+        alert("An error occurred while connecting to PayPal.");
+        setLoading(false);
+      }
+    };
+
     return (
-      <PayPalScriptProvider options={{ "clientId": paypalClientId, currency: "USD" }}>
         <div className="flex flex-col items-center">
           <h2 className="text-2xl font-bold text-white mb-2">Donate with {gateway.toUpperCase()}</h2>
           <p className="text-gray-400 mb-8 max-w-sm text-center">
@@ -332,55 +355,16 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
                 className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
+
+            <button
+              type="submit"
+              disabled={loading || !username || !amount || parseInt(amount) < 10000}
+              className="mt-4 cursor-pointer w-full flex justify-center items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-700 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)] transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Processing..." : `Donate via PayPal`}
+            </button>
           </form>
-
-          <div className="w-full max-w-sm relative z-0">
-            {!username || !amount || parseInt(amount) < 10000 ? (
-              <button
-                disabled
-                className="w-full flex justify-center items-center gap-2 px-8 py-4 bg-gray-800 rounded-xl font-bold text-gray-500 shadow-inner cursor-not-allowed"
-              >
-                Enter Username & Amount
-              </button>
-            ) : (
-              <PayPalButtons
-                style={{ layout: "vertical", shape: "rect", color: "blue" }}
-                createOrder={async () => {
-                  if (!username || !amount) return "";
-
-                  try {
-                    const res = await fetch(`${apiBaseUrl}/api/paypal/donate`, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ username, amount: parseInt(amount, 10) }),
-                    });
-
-                    const orderData = await res.json();
-                    if (orderData.orderID) {
-                      return orderData.orderID;
-                    } else {
-                      throw new Error("Failed to grab order ID");
-                    }
-                  } catch (err) {
-                    console.error(err);
-                    alert("Failed to initiate PayPal checkout.");
-                    return "";
-                  }
-                }}
-                onApprove={async (data, actions) => {
-                  // Payment approved, we can either call the backend or rely on webhook.
-                  // Here we fire an alert for the user.
-                  alert(`Payment for order ${data.orderID} approved! Thank you for supporting Minerva SMP!`);
-                }}
-                onError={(err) => {
-                  console.error("PayPal Error:", err);
-                  alert("A PayPal error occurred.");
-                }}
-              />
-            )}
-          </div>
         </div>
-      </PayPalScriptProvider>
     );
   }
 
