@@ -138,7 +138,9 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
 
   // Native Midtrans Form
   const [amount, setAmount] = useState("50000");
+  const [paypalAmount, setPaypalAmount] = useState("5");
   const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   if (gateway === "saweria") {
     return (
@@ -199,7 +201,7 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
         const res = await fetch(`${apiBaseUrl}/api/donate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, amount: parseInt(amount, 10) }),
+          body: JSON.stringify({ username, message, amount: parseInt(amount, 10) }),
         });
 
         const data = await res.json();
@@ -274,6 +276,19 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1" htmlFor="message">
+              Message (Optional)
+            </label>
+            <textarea
+              id="message"
+              placeholder="Your support message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 h-24 resize-none"
+            />
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -291,14 +306,20 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
 
     const handlePayPalDonate = async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!username || !amount) return;
+      if (!username || !paypalAmount) return;
 
       setLoading(true);
       try {
         const res = await fetch(`${apiBaseUrl}/api/paypal/donate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, amount: parseInt(amount, 10) }),
+          body: JSON.stringify({ 
+            username, 
+            message,
+            amount: parseInt(paypalAmount, 10),
+            return_url: `${window.location.origin}/paypal-success`,
+            cancel_url: `${window.location.origin}/donate`
+          }),
         });
         
         const data = await res.json();
@@ -323,7 +344,7 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
             Payment processed securely by PayPal.
           </p>
 
-          <form className="w-full max-w-sm flex flex-col gap-4 mb-4" onSubmit={(e) => e.preventDefault()}>
+          <form className="w-full max-w-sm flex flex-col gap-4 mb-4" onSubmit={handlePayPalDonate}>
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1" htmlFor="paypal-username">
                 Minecraft Username
@@ -341,27 +362,40 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1" htmlFor="paypal-amount">
-                Donation Amount (Rp)
+                Donation Amount (USD)
               </label>
               <input
                 required
                 id="paypal-amount"
                 type="number"
-                min="10000"
-                step="1000"
-                placeholder="50000"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                min="1"
+                step="1"
+                placeholder="5"
+                value={paypalAmount}
+                onChange={(e) => setPaypalAmount(e.target.value)}
                 className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-1" htmlFor="paypal-message">
+                Message (Optional)
+              </label>
+              <textarea
+                id="paypal-message"
+                placeholder="Your support message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-500 h-24 resize-none"
               />
             </div>
 
             <button
               type="submit"
-              disabled={loading || !username || !amount || parseInt(amount) < 10000}
+              disabled={loading || !username || !paypalAmount || parseInt(paypalAmount) < 1}
               className="mt-4 cursor-pointer w-full flex justify-center items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-700 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)] transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Processing..." : `Donate via PayPal`}
+              {loading ? "Processing..." : `Donate $${parseInt(paypalAmount || "0").toLocaleString("en-US")}`}
             </button>
           </form>
         </div>
