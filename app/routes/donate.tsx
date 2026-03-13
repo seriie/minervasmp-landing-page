@@ -246,7 +246,7 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
         <form onSubmit={handleDonate} className="w-full max-w-sm flex flex-col gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-1" htmlFor="username">
-              Minecraft Username
+              Username
             </label>
             <input
               required
