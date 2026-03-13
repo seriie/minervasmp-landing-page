@@ -29,7 +29,7 @@ export default function Donate() {
       description: "Scan to pay with any supported app",
       icon: <QrCode className="w-6 h-6 text-indigo-400" />,
       color: "from-indigo-500 to-blue-600",
-      available: true
+      available: false
     },
     {
       id: "paypal" as Gateway,
