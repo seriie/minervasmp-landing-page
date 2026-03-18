@@ -19,7 +19,7 @@ interface ServerStatus {
 }
 
 export default function Home() {
-  const SERVER_IP = "play.minervasmp.net";
+  const SERVER_IP = "soon";
   const [status, setStatus] = useState<ServerStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
