@@ -9,7 +9,7 @@ export function meta({ }: Route.MetaArgs) {
   ];
 }
 
-type Gateway = "ewallet" | "qris" | "paypal" | "saweria";
+type Gateway = "ewallet" | "qris" | "paypal" | "saweria" | "sociabuzz";
 
 export default function Donate() {
   const [selectedGateway, setSelectedGateway] = useState<Gateway | null>(null);
@@ -55,6 +55,16 @@ export default function Donate() {
       glow: "rgba(245,158,11,0.2)",
       available: true,
     },
+    {
+      id: "sociabuzz" as Gateway,
+      name: "Sociabuzz",
+      description: "International payments (supports SEA E-wallet)",
+      icon: <ExternalLink className="w-5 h-5" />,
+      iconColor: "text-emerald-400",
+      gradient: "from-emerald-500/20 to-teal-600/20",
+      glow: "rgba(11, 245, 23, 0.2)",
+      available: true,
+    }
   ];
 
   return (
@@ -144,13 +154,11 @@ export default function Donate() {
                   key={gw.id}
                   disabled={!gw.available}
                   onClick={() => setSelectedGateway(gw.id)}
-                  className={`relative flex items-start gap-4 p-5 rounded-2xl text-left transition-all duration-300 border outline-none overflow-hidden ${
-                    !gw.available ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
-                  } ${
-                    isSelected
+                  className={`relative flex items-start gap-4 p-5 rounded-2xl text-left transition-all duration-300 border outline-none overflow-hidden ${!gw.available ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+                    } ${isSelected
                       ? "border-white/20 bg-white/8"
                       : "border-white/8 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/14"
-                  }`}
+                    }`}
                   style={
                     isSelected
                       ? { boxShadow: `0 0 30px ${gw.glow}, 0 0 0 1px rgba(255,255,255,0.08) inset` }
@@ -188,9 +196,8 @@ export default function Donate() {
 
                   {/* Radio indicator */}
                   <div
-                    className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                      isSelected ? "bg-white border-white" : "border-slate-600"
-                    }`}
+                    className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${isSelected ? "bg-white border-white" : "border-slate-600"
+                      }`}
                   >
                     <Check size={11} className={`text-slate-900 transition-opacity ${isSelected ? "opacity-100" : "opacity-0"}`} />
                   </div>
@@ -236,6 +243,36 @@ function PaymentContent({ gateway }: { gateway: Gateway }) {
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  /* ── Sociabuzz ── */
+  if (gateway === "sociabuzz") {
+    return (
+      <div className="flex flex-col items-center text-center">
+        <div className="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 relative">
+          <div className="absolute inset-0 rounded-2xl bg-emerald-500/5 blur-xl" />
+          <ExternalLink className="w-9 h-9 text-emerald-400 relative z-10" />
+        </div>
+        <h2 className="text-2xl font-extrabold text-white mb-3">Donate via Sociabuzz</h2>
+        <p className="text-slate-400 mb-8 max-w-sm text-sm leading-relaxed">
+          Supports international payments include SEA E-wallet
+        </p>
+        <a
+          href="https://sociabuzz.com/zidannaxserpat/tribe"
+          target="_blank"
+          rel="noreferrer"
+          className="relative group flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, #10b981, #059669)",
+            boxShadow: "0 0 24px rgba(16,185,129,0.3)",
+          }}
+        >
+          <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+          Open Sociabuzz
+          <ChevronRight size={18} />
+        </a>
+      </div>
+    );
+  }
 
   /* ── Saweria ── */
   if (gateway === "saweria") {
@@ -468,8 +505,8 @@ function DonateForm({
           {loading ? (
             <span className="flex items-center gap-2">
               <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
               Processing…
             </span>
