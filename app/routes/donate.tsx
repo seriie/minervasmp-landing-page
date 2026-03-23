@@ -23,6 +23,7 @@ export default function Donate() {
       iconColor: "text-emerald-400",
       gradient: "from-emerald-500/20 to-teal-600/20",
       glow: "rgba(52,211,153,0.2)",
+      hidden: false,
       available: false,
     },
     {
@@ -33,6 +34,7 @@ export default function Donate() {
       iconColor: "text-indigo-400",
       gradient: "from-indigo-500/20 to-blue-600/20",
       glow: "rgba(99,102,241,0.2)",
+      hidden: false,
       available: false,
     },
     {
@@ -43,6 +45,7 @@ export default function Donate() {
       iconColor: "text-sky-400",
       gradient: "from-sky-500/20 to-blue-700/20",
       glow: "rgba(14,165,233,0.2)",
+      hidden: false,
       available: true,
     },
     {
@@ -53,6 +56,7 @@ export default function Donate() {
       iconColor: "text-amber-400",
       gradient: "from-amber-500/20 to-orange-600/20",
       glow: "rgba(245,158,11,0.2)",
+      hidden: true,
       available: true,
     },
     {
@@ -63,6 +67,7 @@ export default function Donate() {
       iconColor: "text-emerald-400",
       gradient: "from-emerald-500/20 to-teal-600/20",
       glow: "rgba(11, 245, 23, 0.2)",
+      hidden: false,
       available: true,
     }
   ];
@@ -149,6 +154,7 @@ export default function Donate() {
           <div className="grid sm:grid-cols-2 gap-4 mb-8">
             {gateways.map((gw) => {
               const isSelected = selectedGateway === gw.id;
+              if (gw.hidden) return null;
               return (
                 <button
                   key={gw.id}
