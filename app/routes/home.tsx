@@ -116,6 +116,13 @@ export default function Home() {
               Features
               <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-indigo-400 rounded-full scale-x-0 group-hover:scale-x-100 origin-left transition-transform" />
             </a>
+            <a
+              href="/perks"
+              className="text-slate-400 hover:text-white transition-colors relative group"
+            >
+              Perks
+              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-indigo-400 rounded-full scale-x-0 group-hover:scale-x-100 origin-left transition-transform" />
+            </a>
           </div>
 
           <a
