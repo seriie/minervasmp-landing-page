@@ -16,7 +16,7 @@ interface ServerStatus {
 }
 
 export default function Home() {
-  const SERVER_IP = "soon";
+  const SERVER_IP = "minervasmp.raznar.net:25080";
   const [status, setStatus] = useState<ServerStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
