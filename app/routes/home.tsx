@@ -11,8 +11,8 @@ export function meta({}: Route.MetaArgs) {
 
 interface ServerStatus {
   online: boolean;
-  players: { online: number; max: number };
-  version: string;
+  players?: { online: number; max: number };
+  version?: string;
 }
 
 export default function Home() {
@@ -25,15 +25,27 @@ export default function Home() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await fetch(`https://api.mcsrvstat.us/3/${SERVER_IP}`);
-        const data = await res.json();
-        setStatus({
-          online: data.online,
-          players: { online: data.players?.online || 0, max: data.players?.max || 0 },
-          version: data.version || "1.20.4",
+        const res = await fetch('https://console-ptero.raznar.id/api/client/servers/187a513f/resources', {
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${import.meta.env.VITE_PTERODACTYL_API}`,
+          }
         });
-      } catch {
-        setStatus({ online: false, players: { online: 0, max: 0 }, version: "Unknown" });
+        if (!res.ok) throw new Error("Status API failed");
+
+        const data = await res.json();
+        // The Pterodactyl resource response nests data inside `attributes`
+        const state = data.attributes?.current_state || data.current_state;
+        
+        console.log("Server Status:", data);
+        setStatus({
+          online: state === "running",
+          version: "1.21.11",
+        });
+      } catch (err) {
+        console.error("Failed to fetch status:", err);
+        setStatus(null);
       } finally {
         setLoading(false);
       }
@@ -163,9 +175,8 @@ export default function Home() {
             <span className="text-slate-300">
               {loading
                 ? "Checking Status…"
-                : status?.online
-                ? `${status.players.online} Players Online`
-                : "Server Offline"}
+                : status?.online ? "Online" : "Offline"
+              }
             </span>
           </div>
 
