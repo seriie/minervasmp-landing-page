@@ -170,7 +170,12 @@ export default function Home() {
               {loading
                 ? "Checking Status…"
                 : status?.online ? "Online" : "Offline"
-              }
+              }{' '}
+              {status?.online && (
+                <span>
+                  {status.players?.online}/{status.players?.max} players
+                </span>
+              )}
             </span>
           </div>
 
