@@ -25,23 +25,17 @@ export default function Home() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await fetch('https://console-ptero.raznar.id/api/client/servers/187a513f/resources', {
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${import.meta.env.VITE_PTERODACTYL_API}`,
-          }
-        });
+        const url = `https://api.mcsrvstat.us/3/minervasmp.raznar.net:25080`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error("Status API failed");
-
-        const data = await res.json();
-        // The Pterodactyl resource response nests data inside `attributes`
-        const state = data.attributes?.current_state || data.current_state;
         
+        const data = await res.json();
         console.log("Server Status:", data);
+        
         setStatus({
-          online: state === "running",
-          version: "1.21.11",
+          online: data.online,
+          version: data.version || "1.21.11",
+          players: data.players
         });
       } catch (err) {
         console.error("Failed to fetch status:", err);
