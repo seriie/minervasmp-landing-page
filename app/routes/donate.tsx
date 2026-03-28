@@ -92,7 +92,7 @@ export default function Donate() {
       <nav className="fixed w-full z-50 glass nav-border">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <a href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl glass border border-white/10 flex items-center justify-center group-hover:border-indigo-500/40 group-hover:bg-indigo-500/10 transition-all duration-300">
+            <div className="w-9 h-9 rounded-xl glass backdrop-blur-sm border border-white/10 flex items-center justify-center group-hover:border-indigo-500/40 group-hover:bg-indigo-500/10 transition-all duration-300">
               <ArrowLeft size={18} className="text-slate-400 group-hover:text-indigo-400 transition-colors" />
             </div>
             <span className="text-sm font-semibold text-slate-400 group-hover:text-white transition-colors">Back to Home</span>

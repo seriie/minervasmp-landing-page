@@ -130,7 +130,7 @@ export default function Perks() {
         className={`fixed w-full z-50 transition-all duration-500 ${
           scrolled
             ? "glass nav-border shadow-2xl"
-            : "bg-transparent border-b border-transparent"
+            : "bg-transparent border-b border-transparent backdrop-blur-sm"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
